@@ -25,10 +25,12 @@ public class ChunkNoise
 
     void GenerateNoise() {
         noiseCompute.SetBuffer(0, "_Noise", noiseBuffer);
-        noiseCompute.SetInt("_ChunkSize", ChunkMetrics.chunkSize);
+        //noiseCompute.SetInt("_ChunkSize", ChunkMetrics.chunkSize);
+        noiseCompute.SetInt("_ChunkSizeWidth", ChunkMetrics.chunkWidth);
+        noiseCompute.SetInt("_ChunkSizeHeight", ChunkMetrics.chunkHeight);
         noiseCompute.SetInt("_NoiseSeed", seed);
 
-        noiseCompute.Dispatch(0, ChunkMetrics.dispatchThreads, ChunkMetrics.dispatchThreads, ChunkMetrics.dispatchThreads);
+        noiseCompute.Dispatch(0, ChunkMetrics.dispatchThreadsWidth, ChunkMetrics.dispatchThreadsHeight, ChunkMetrics.dispatchThreadsWidth);
 
         Noise = new int[ChunkMetrics.blocksPerChunk];
         noiseBuffer.GetData(Noise);

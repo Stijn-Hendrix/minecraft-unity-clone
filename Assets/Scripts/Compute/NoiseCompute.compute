@@ -3,7 +3,9 @@
 #include "Includes\FastNoiseLite.compute"
 
 static const uint computeThreads = 8;
-int _ChunkSize;
+int _ChunkSizeHeight;
+int _ChunkSizeWidth;
+
 int _NoiseSeed;
 
 
@@ -17,7 +19,7 @@ static int _GroundPercent = 0.2;
 
 int indexFromCoord(int x, int y, int z)
 {
-    return x + _ChunkSize * (y + _ChunkSize * z);
+    return x + _ChunkSizeWidth * (y + _ChunkSizeHeight * z);
 }
 
 [numthreads(computeThreads, computeThreads, computeThreads)]
@@ -26,9 +28,16 @@ void GenerateNoise(uint3 id : SV_DispatchThreadID)
     fnl_state noise = fnlCreateState(_NoiseSeed);
     noise.noise_type = FNL_NOISE_OPENSIMPLEX2;
 
-    //float n = fnlGetNoise3D(noise, id.x, id.y, id.z);
-
     float n = fnlGetNoise3D(noise, id.x, id.y, id.z) + 1;
+
+    /*
+    float n = 1;
+
+    if (id.y > 5 && id.x > 2)
+    {
+        n = 2;
+    }
+    */
 
     _Noise[indexFromCoord(id.x, id.y, id.z)] = int(round(n));
 }

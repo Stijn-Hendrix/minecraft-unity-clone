@@ -36,7 +36,11 @@ public class Chunk : MonoBehaviour
         print($"Chunk creation - Time elapsed: {stopwatch.Elapsed.TotalMilliseconds} ms");
     }
 
-    int IndexFromCoord(int x, int y, int z) {
-        return x + ChunkMetrics.chunkSize * (y + ChunkMetrics.chunkSize * z);
+	private void OnValidate() {
+        Create();
+	}
+
+	int IndexFromCoord(int x, int y, int z) {
+        return x + ChunkMetrics.chunkWidth * (y + ChunkMetrics.chunkWidth * z);
     }
 }

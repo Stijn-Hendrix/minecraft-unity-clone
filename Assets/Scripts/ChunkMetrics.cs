@@ -6,10 +6,12 @@ public static class ChunkMetrics
 {
     public const int computeThreads = 8;
 
-    public const int dispatchThreads = chunkSize / computeThreads;
+    public const int dispatchThreadsWidth = chunkWidth / computeThreads;
+    public const int dispatchThreadsHeight = chunkHeight / computeThreads;
 
     // must be divible by 8
-    public const int chunkSize = 32;
+    public const int chunkWidth = 16;
+    public const int chunkHeight = 64;
 
-    public const int blocksPerChunk = chunkSize * chunkSize * chunkSize;
+    public const int blocksPerChunk = chunkWidth * chunkWidth * chunkHeight;
 }

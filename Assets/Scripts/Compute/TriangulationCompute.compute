@@ -1,7 +1,8 @@
 ﻿#pragma kernel CSMain
 
 static const int computeThreads = 8;
-int _ChunkSize = 16;
+int _ChunkSizeHeight = 16;
+int _ChunkSizeWidth = 16;
 
 
 RWStructuredBuffer<int> _Blocks;
@@ -151,7 +152,7 @@ void AddBottomFace(float2 uvs, float3 offset )
 
 int indexFromCoord(int x, int y, int z)
 {
-    return x + _ChunkSize * (y + _ChunkSize * z);
+    return x + _ChunkSizeWidth * (y + _ChunkSizeHeight * z);
 }
 
 [numthreads( computeThreads, computeThreads, computeThreads )]
@@ -168,7 +169,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         int topIndex = indexFromCoord(id.x, id.y + 1, id.z);
         int blockTypeTop = _Blocks[topIndex];
 
-        if (blockTypeTop == 0 || id.y == _ChunkSize - 1)
+        if (blockTypeTop == 0 || id.y == _ChunkSizeHeight - 1)
         {
             AddTopFace(uvs.TopUV, id);
         }
@@ -176,7 +177,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         int rightIndex = indexFromCoord(id.x + 1, id.y, id.z);
         int blockTypeRight = _Blocks[rightIndex];
 
-        if (blockTypeRight == 0 || id.x == _ChunkSize - 1)
+        if (blockTypeRight == 0 || id.x == _ChunkSizeWidth - 1)
         {
             AddRightFace(uvs.SidesUV, id);
         }
@@ -184,7 +185,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         int frontIndex = indexFromCoord(id.x, id.y, id.z - 1);
         int blockTypeFront = _Blocks[frontIndex];
 
-        if (blockTypeFront == 0)
+        if (blockTypeFront == 0 || id.z == 0)
         {
             AddFrontFace(uvs.SidesUV, id);
         }
@@ -200,7 +201,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         int backIndex = indexFromCoord(id.x, id.y, id.z + 1);
         int blockTypeBack = _Blocks[backIndex];
 
-        if (blockTypeBack == 0 || id.z == _ChunkSize - 1)
+        if (blockTypeBack == 0 || id.z == _ChunkSizeWidth - 1)
         {
             AddBackFace(uvs.SidesUV, id);
         }

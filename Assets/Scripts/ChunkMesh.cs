@@ -48,14 +48,15 @@ public class ChunkMesh
         triangulateShader.SetBuffer(0, "_Triangles", trianglesBuffer);
         triangulateShader.SetBuffer(0, "_Blocks", blocksBuffer);
         triangulateShader.SetBuffer(0, "_BlocksAtlas", blockTypeAtlasBuffer);
-        triangulateShader.SetInt("_ChunkSize", ChunkMetrics.chunkSize);
+        triangulateShader.SetInt("_ChunkSizeWidth", ChunkMetrics.chunkWidth);
+        triangulateShader.SetInt("_ChunkSizeHeight", ChunkMetrics.chunkHeight);
 
         // Set block data
         blockTypeAtlasBuffer.SetData(blockAtlas.BlockTypeUvs);
         blocksBuffer.SetData(blockTypes);
                 
         // Dispatch
-        triangulateShader.Dispatch(0, ChunkMetrics.dispatchThreads, ChunkMetrics.dispatchThreads, ChunkMetrics.dispatchThreads);
+        triangulateShader.Dispatch(0, ChunkMetrics.dispatchThreadsWidth, ChunkMetrics.dispatchThreadsHeight, ChunkMetrics.dispatchThreadsWidth);
 
         // Retreive triangle data
         Triangle[] triangles = new Triangle[TriangleCount];
