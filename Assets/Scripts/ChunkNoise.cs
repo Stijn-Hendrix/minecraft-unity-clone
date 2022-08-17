@@ -12,23 +12,24 @@ public class ChunkNoise
 
     int seed;
 
-    public ChunkNoise(ComputeShader noiseCompute, int seed) {
+    public ChunkNoise(ComputeShader noiseCompute, int seed, Vector3 position) {
         this.noiseCompute = noiseCompute;
         this.seed = seed;
 
         CreateBuffers();
 
-        GenerateNoise();
+        GenerateNoise(position);
 
         ReleaseBuffers();
 	}
 
-    void GenerateNoise() {
+    void GenerateNoise(Vector3 position) {
         noiseCompute.SetBuffer(0, "_Noise", noiseBuffer);
         //noiseCompute.SetInt("_ChunkSize", ChunkMetrics.chunkSize);
         noiseCompute.SetInt("_ChunkSizeWidth", ChunkMetrics.chunkWidth);
         noiseCompute.SetInt("_ChunkSizeHeight", ChunkMetrics.chunkHeight);
         noiseCompute.SetInt("_NoiseSeed", seed);
+        noiseCompute.SetVector("_PositionOffset", position);
 
         noiseCompute.Dispatch(0, ChunkMetrics.dispatchThreadsWidth, ChunkMetrics.dispatchThreadsHeight, ChunkMetrics.dispatchThreadsWidth);
 

@@ -177,7 +177,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         int rightIndex = indexFromCoord(id.x + 1, id.y, id.z);
         int blockTypeRight = _Blocks[rightIndex];
 
-        if (blockTypeRight == 0 || id.x == _ChunkSizeWidth - 1)
+        if (blockTypeRight == 0 && id.x != _ChunkSizeWidth - 1)
         {
             AddRightFace(uvs.SidesUV, id);
         }
@@ -185,7 +185,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         int frontIndex = indexFromCoord(id.x, id.y, id.z - 1);
         int blockTypeFront = _Blocks[frontIndex];
 
-        if (blockTypeFront == 0 || id.z == 0)
+        if (blockTypeFront == 0 && id.z != 0)
         {
             AddFrontFace(uvs.SidesUV, id);
         }
@@ -193,7 +193,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         int leftIndex = indexFromCoord(id.x - 1, id.y, id.z);
         int blockTypeLeft = _Blocks[leftIndex];
 
-        if (blockTypeLeft == 0 || id.x == 0)
+        if (blockTypeLeft == 0 && id.x != 0)
         {
             AddLeftFace(uvs.SidesUV, id);
         }
@@ -201,7 +201,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         int backIndex = indexFromCoord(id.x, id.y, id.z + 1);
         int blockTypeBack = _Blocks[backIndex];
 
-        if (blockTypeBack == 0 || id.z == _ChunkSizeWidth - 1)
+        if (blockTypeBack == 0 && id.z != _ChunkSizeWidth - 1)
         {
             AddBackFace(uvs.SidesUV, id);
         }
@@ -209,7 +209,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         int bottomIndex = indexFromCoord(id.x, id.y - 1, id.z);
         int blockTypeBottom = _Blocks[bottomIndex];
 
-        if (blockTypeBottom == 0 || id.y == 0)
+        if (blockTypeBottom == 0 && id.y != 0)
         {
             AddBottomFace(uvs.BottomUV, id);
         }

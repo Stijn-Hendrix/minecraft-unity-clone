@@ -8,14 +8,12 @@ int _ChunkSizeWidth;
 
 int _NoiseSeed;
 
+float3 _PositionOffset;
 
 RWStructuredBuffer<int> _Noise;
 
-static int _NoiseScale = 1;
-static int _Amplitude = 5;
-static int _Frequency = 0.01;
-static int _Octaves = 2;
-static int _GroundPercent = 0.2;
+static float _GroundPercent = 0.6f;
+static float _Amplitude = 10;
 
 int indexFromCoord(int x, int y, int z)
 {
@@ -27,17 +25,13 @@ void GenerateNoise(uint3 id : SV_DispatchThreadID)
 {
     fnl_state noise = fnlCreateState(_NoiseSeed);
     noise.noise_type = FNL_NOISE_OPENSIMPLEX2;
+    noise.fractal_type = FNL_FRACTAL_RIDGED;
 
-    float n = fnlGetNoise3D(noise, id.x, id.y, id.z) + 1;
+    //float n = fnlGetNoise3D(noise, id.x, id.y, id.z) + 1;
 
-    /*
-    float n = 1;
+    float n = _ChunkSizeHeight * _GroundPercent + fnlGetNoise3D(noise, id.x + _PositionOffset.x, id.y + _PositionOffset.y, id.z + _PositionOffset.z) * _Amplitude;
 
-    if (id.y > 5 && id.x > 2)
-    {
-        n = 2;
-    }
-    */
+    n = id.y >= n ? 0 : 1;
 
     _Noise[indexFromCoord(id.x, id.y, id.z)] = int(round(n));
 }
