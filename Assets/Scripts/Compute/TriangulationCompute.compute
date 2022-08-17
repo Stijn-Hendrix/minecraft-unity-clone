@@ -1,0 +1,217 @@
+﻿#pragma kernel CSMain
+
+static const int computeThreads = 8;
+int _ChunkSize = 16;
+
+
+RWStructuredBuffer<int> _Blocks;
+
+struct BlockTypeUvs {
+    float2 TopUV;
+    float2 BottomUV;
+    float2 SidesUV;
+};
+
+RWStructuredBuffer<BlockTypeUvs> _BlocksAtlas;
+
+struct Triangle {
+    float3 v_a, v_b, v_c;
+    float2 uv_a, uv_b, uv_c;
+};
+
+
+AppendStructuredBuffer<Triangle> _Triangles;
+
+void AddTopFace(float2 uvs, float3 offset)
+{
+    Triangle tri0;
+    tri0.v_a = float3(0, 1, 0) + offset;
+    tri0.v_b = float3(0, 1, 1) + offset;
+    tri0.v_c = float3(1, 1, 0) + offset;
+    tri0.uv_a = float2(uvs.x, uvs.y) / 16;
+    tri0.uv_b = float2(uvs.x, uvs.y + 1) / 16;
+    tri0.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    _Triangles.Append(tri0);
+
+    Triangle tri1;
+    tri1.v_a = float3(0, 1, 1) + offset;
+    tri1.v_b = float3(1, 1, 1) + offset;
+    tri1.v_c = float3(1, 1, 0) + offset;
+    tri1.uv_a = float2(uvs.x, uvs.y + 1) / 16;
+    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / 16;
+    tri1.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    _Triangles.Append(tri1);
+}
+
+void AddRightFace(float2 uvs, float3 offset )
+{
+    Triangle tri0;
+    tri0.v_a = float3(1, 0, 0) + offset;
+    tri0.v_b = float3(1, 1, 0) + offset;
+    tri0.v_c = float3(1, 0, 1) + offset;
+    tri0.uv_a = float2(uvs.x, uvs.y) / 16;
+    tri0.uv_b = float2(uvs.x, uvs.y + 1) / 16;
+    tri0.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    _Triangles.Append(tri0);
+
+    Triangle tri1;
+    tri1.v_a = float3(1, 1, 0) + offset;
+    tri1.v_b = float3(1, 1, 1) + offset;
+    tri1.v_c = float3(1, 0, 1) + offset;
+    tri1.uv_a = float2(uvs.x, uvs.y + 1) / 16;
+    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / 16;
+    tri1.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    _Triangles.Append(tri1);
+}
+
+void AddFrontFace(float2 uvs, float3 offset )
+{
+    Triangle tri0;
+    tri0.v_a = float3(0, 0, 0) + offset;
+    tri0.v_b = float3(0, 1, 0) + offset;
+    tri0.v_c = float3(1, 0, 0) + offset;
+    tri0.uv_a = float2(uvs.x, uvs.y) / 16;
+    tri0.uv_b = float2(uvs.x, uvs.y + 1) / 16;
+    tri0.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    _Triangles.Append(tri0);
+
+    Triangle tri1;
+    tri1.v_a = float3(0, 1, 0) + offset;
+    tri1.v_b = float3(1, 1, 0) + offset;
+    tri1.v_c = float3(1, 0, 0) + offset;
+    tri1.uv_a = float2(uvs.x, uvs.y + 1) / 16;
+    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / 16;
+    tri1.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    _Triangles.Append(tri1);
+}
+
+void AddLeftFace(float2 uvs, float3 offset )
+{
+    Triangle tri0;
+    tri0.v_a = float3(0, 0, 1) + offset;
+    tri0.v_b = float3(0, 1, 1) + offset;
+    tri0.v_c = float3(0, 0, 0) + offset;
+    tri0.uv_a = float2(uvs.x, uvs.y) / 16;
+    tri0.uv_b = float2(uvs.x, uvs.y + 1) / 16;
+    tri0.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    _Triangles.Append(tri0);
+
+    Triangle tri1;
+    tri1.v_a = float3(0, 1, 1) + offset;
+    tri1.v_b = float3(0, 1, 0) + offset;
+    tri1.v_c = float3(0, 0, 0) + offset;
+    tri1.uv_a = float2(uvs.x, uvs.y + 1) / 16;
+    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / 16;
+    tri1.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    _Triangles.Append(tri1);
+}
+
+void AddBackFace(float2 uvs, float3 offset )
+{
+    Triangle tri0;
+    tri0.v_a = float3(1, 0, 1) + offset;
+    tri0.v_b = float3(1, 1, 1) + offset;
+    tri0.v_c = float3(0, 0, 1) + offset;
+    tri0.uv_a = float2(uvs.x, uvs.y) / 16;
+    tri0.uv_b = float2(uvs.x, uvs.y + 1) / 16;
+    tri0.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    _Triangles.Append(tri0);
+
+    Triangle tri1;
+    tri1.v_a = float3(1, 1, 1) + offset;
+    tri1.v_b = float3(0, 1, 1) + offset;
+    tri1.v_c = float3(0, 0, 1) + offset;
+    tri1.uv_a = float2(uvs.x, uvs.y + 1) / 16;
+    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / 16;
+    tri1.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    _Triangles.Append(tri1);
+}
+
+void AddBottomFace(float2 uvs, float3 offset )
+{
+    Triangle tri0;
+    tri0.v_a = float3(0, 0, 0) + offset;
+    tri0.v_b = float3(1, 0, 0) + offset;
+    tri0.v_c = float3(0, 0, 1) + offset;
+    tri0.uv_a = float2(uvs.x, uvs.y) / 16;
+    tri0.uv_b = float2(uvs.x, uvs.y + 1) / 16;
+    tri0.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    _Triangles.Append(tri0);
+
+    Triangle tri1;
+    tri1.v_a = float3(1, 0, 0) + offset;
+    tri1.v_b = float3(1, 0, 1) + offset;
+    tri1.v_c = float3(0, 0, 1) + offset;
+    tri1.uv_a = float2(uvs.x, uvs.y + 1) / 16;
+    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / 16;
+    tri1.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    _Triangles.Append(tri1);
+}
+
+
+int indexFromCoord(int x, int y, int z)
+{
+    return x + _ChunkSize * (y + _ChunkSize * z);
+}
+
+[numthreads( computeThreads, computeThreads, computeThreads )]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    int index = indexFromCoord(id.x, id.y, id.z);
+    int blockType = _Blocks[index];
+    BlockTypeUvs uvs = _BlocksAtlas[blockType];
+     
+    if (blockType != 0)
+    {
+        BlockTypeUvs uvs = _BlocksAtlas[blockType];
+
+        int topIndex = indexFromCoord(id.x, id.y + 1, id.z);
+        int blockTypeTop = _Blocks[topIndex];
+
+        if (blockTypeTop == 0 || id.y == _ChunkSize - 1)
+        {
+            AddTopFace(uvs.TopUV, id);
+        }
+
+        int rightIndex = indexFromCoord(id.x + 1, id.y, id.z);
+        int blockTypeRight = _Blocks[rightIndex];
+
+        if (blockTypeRight == 0 || id.x == _ChunkSize - 1)
+        {
+            AddRightFace(uvs.SidesUV, id);
+        }
+
+        int frontIndex = indexFromCoord(id.x, id.y, id.z - 1);
+        int blockTypeFront = _Blocks[frontIndex];
+
+        if (blockTypeFront == 0)
+        {
+            AddFrontFace(uvs.SidesUV, id);
+        }
+
+        int leftIndex = indexFromCoord(id.x - 1, id.y, id.z);
+        int blockTypeLeft = _Blocks[leftIndex];
+
+        if (blockTypeLeft == 0 || id.x == 0)
+        {
+            AddLeftFace(uvs.SidesUV, id);
+        }
+
+        int backIndex = indexFromCoord(id.x, id.y, id.z + 1);
+        int blockTypeBack = _Blocks[backIndex];
+
+        if (blockTypeBack == 0 || id.z == _ChunkSize - 1)
+        {
+            AddBackFace(uvs.SidesUV, id);
+        }
+
+        int bottomIndex = indexFromCoord(id.x, id.y - 1, id.z);
+        int blockTypeBottom = _Blocks[bottomIndex];
+
+        if (blockTypeBottom == 0 || id.y == 0)
+        {
+            AddBottomFace(uvs.BottomUV, id);
+        }
+    }
+}
+
