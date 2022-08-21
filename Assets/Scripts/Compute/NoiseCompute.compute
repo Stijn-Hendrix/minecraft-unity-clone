@@ -13,7 +13,7 @@ float3 _PositionOffset;
 RWStructuredBuffer<int> _Noise;
 
 static float _GroundPercent = 0.6f;
-static float _Amplitude = 10;
+static float _Amplitude = 20;
 
 
 [numthreads(computeThreads, computeThreads, computeThreads)]
@@ -31,7 +31,7 @@ void GenerateNoise(uint3 id : SV_DispatchThreadID)
     // Sample the noise so that there exist edges around the chunk
     float n = _ChunkSizeHeight * _GroundPercent + fnlGetNoise3D(noise, id.x + _PositionOffset.x - 1, id.y + _PositionOffset.y, id.z + _PositionOffset.z - 1) * _Amplitude;
 
-    n = id.y >= n ? 0 : 1;
+    n = id.y >= n ? 0 : 3;
 
     _Noise[indexFromCoord(id.x, id.y, id.z)] = int(round(n));
 }

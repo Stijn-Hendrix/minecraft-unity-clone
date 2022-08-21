@@ -4,6 +4,19 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour
 {
+    public Vector2Int Position { get; set; }
+
+    public bool Visible {
+        get {
+            return gameObject.activeSelf;
+        }
+        set {
+            if (value != Visible) {
+                gameObject.SetActive(value);
+            }
+        }
+    }
+
     [Header("-- Display --")]
     public bool showCreationTime = false;
     public MeshFilter meshFilter;
