@@ -330,7 +330,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chunkPrefab: {fileID: 1126414117410449546, guid: d2cbcc4daac5a0a4d8de20f40343af8a,
     type: 3}
-  chunks: 4
+  chunks: 20
 --- !u!4 &1301897452
 Transform:
   m_ObjectHideFlags: 0
