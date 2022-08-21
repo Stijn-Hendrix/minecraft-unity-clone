@@ -31,14 +31,14 @@ public class ChunkNoise
         noiseCompute.SetInt("_NoiseSeed", seed);
         noiseCompute.SetVector("_PositionOffset", position);
 
-        noiseCompute.Dispatch(0, ChunkMetrics.dispatchThreadsWidth, ChunkMetrics.dispatchThreadsHeight, ChunkMetrics.dispatchThreadsWidth);
+        noiseCompute.Dispatch(0, ChunkMetrics.dispatchThreadsWidth + 1, ChunkMetrics.dispatchThreadsHeight, ChunkMetrics.dispatchThreadsWidth + 1);
 
-        Noise = new int[ChunkMetrics.blocksPerChunk];
+        Noise = new int[ChunkMetrics.noisePerChunk];
         noiseBuffer.GetData(Noise);
     }
 
     void CreateBuffers() {
-        noiseBuffer = new ComputeBuffer(ChunkMetrics.blocksPerChunk, sizeof(int));
+        noiseBuffer = new ComputeBuffer(ChunkMetrics.noisePerChunk, sizeof(int));
     }
 
     void ReleaseBuffers() {

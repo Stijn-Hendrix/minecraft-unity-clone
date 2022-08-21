@@ -6,7 +6,7 @@ int _ChunkSizeWidth;
 
 int indexFromCoord(int x, int y, int z)
 {
-    return x + _ChunkSizeWidth * (y + _ChunkSizeHeight * z);
+    return x + (_ChunkSizeWidth + 2) * (y + _ChunkSizeHeight * z);
 }
 
 #endif

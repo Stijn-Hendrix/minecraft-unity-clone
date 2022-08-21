@@ -19,11 +19,16 @@ static float _Amplitude = 10;
 [numthreads(computeThreads, computeThreads, computeThreads)]
 void GenerateNoise(uint3 id : SV_DispatchThreadID)
 {
+    if (id.x >= _ChunkSizeWidth + 2 || id.z >= _ChunkSizeWidth + 2)
+    {
+        return;
+    }
+
     fnl_state noise = fnlCreateState(_NoiseSeed);
     noise.noise_type = FNL_NOISE_OPENSIMPLEX2;
     noise.fractal_type = FNL_FRACTAL_RIDGED;
 
-    float n = _ChunkSizeHeight * _GroundPercent + fnlGetNoise3D(noise, id.x + _PositionOffset.x, id.y + _PositionOffset.y, id.z + _PositionOffset.z) * _Amplitude;
+    float n = _ChunkSizeHeight * _GroundPercent + fnlGetNoise3D(noise, id.x + _PositionOffset.x - 1, id.y + _PositionOffset.y, id.z + _PositionOffset.z - 1) * _Amplitude;
 
     n = id.y >= n ? 0 : 1;
 

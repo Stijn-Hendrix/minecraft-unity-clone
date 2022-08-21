@@ -151,7 +151,9 @@ void AddBottomFace(float2 uvs, float3 offset )
 [numthreads( computeThreads, computeThreads, computeThreads )]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-    int index = indexFromCoord(id.x, id.y, id.z);
+    uint3 sampleId = uint3(id.x + 1, id.y, id.z + 1);
+
+    int index = indexFromCoord(sampleId.x, sampleId.y, sampleId.z);
     int blockType = _Blocks[index];
     BlockTypeUvs uvs = _BlocksAtlas[blockType];
      
@@ -159,52 +161,52 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     {
         BlockTypeUvs uvs = _BlocksAtlas[blockType];
 
-        int topIndex = indexFromCoord(id.x, id.y + 1, id.z);
+        int topIndex = indexFromCoord(sampleId.x, sampleId.y + 1, sampleId.z);
         int blockTypeTop = _Blocks[topIndex];
 
-        if (blockTypeTop == 0 || id.y == _ChunkSizeHeight - 1)
+        if (blockTypeTop == 0 || sampleId.y == _ChunkSizeHeight - 1)
         {
-            AddTopFace(uvs.TopUV, id);
+            AddTopFace(uvs.TopUV, sampleId);
         }
 
-        int rightIndex = indexFromCoord(id.x + 1, id.y, id.z);
+        int rightIndex = indexFromCoord(sampleId.x + 1, sampleId.y, sampleId.z);
         int blockTypeRight = _Blocks[rightIndex];
 
-        if (blockTypeRight == 0 && id.x != _ChunkSizeWidth - 1)
+        if (blockTypeRight == 0)
         {
-            AddRightFace(uvs.SidesUV, id);
+            AddRightFace(uvs.SidesUV, sampleId);
         }
 
-        int frontIndex = indexFromCoord(id.x, id.y, id.z - 1);
+        int frontIndex = indexFromCoord(sampleId.x, sampleId.y, sampleId.z - 1);
         int blockTypeFront = _Blocks[frontIndex];
 
-        if (blockTypeFront == 0 && id.z != 0)
+        if (blockTypeFront == 0)
         {
-            AddFrontFace(uvs.SidesUV, id);
+            AddFrontFace(uvs.SidesUV, sampleId);
         }
 
-        int leftIndex = indexFromCoord(id.x - 1, id.y, id.z);
+        int leftIndex = indexFromCoord(sampleId.x - 1, sampleId.y, sampleId.z);
         int blockTypeLeft = _Blocks[leftIndex];
 
-        if (blockTypeLeft == 0 && id.x != 0)
+        if (blockTypeLeft == 0)
         {
-            AddLeftFace(uvs.SidesUV, id);
+            AddLeftFace(uvs.SidesUV, sampleId);
         }
 
-        int backIndex = indexFromCoord(id.x, id.y, id.z + 1);
+        int backIndex = indexFromCoord(sampleId.x, sampleId.y, sampleId.z + 1);
         int blockTypeBack = _Blocks[backIndex];
 
-        if (blockTypeBack == 0 && id.z != _ChunkSizeWidth - 1)
+        if (blockTypeBack == 0)
         {
-            AddBackFace(uvs.SidesUV, id);
+            AddBackFace(uvs.SidesUV, sampleId);
         }
 
-        int bottomIndex = indexFromCoord(id.x, id.y - 1, id.z);
+        int bottomIndex = indexFromCoord(sampleId.x, sampleId.y - 1, sampleId.z);
         int blockTypeBottom = _Blocks[bottomIndex];
 
-        if (blockTypeBottom == 0 && id.y != 0)
+        if (blockTypeBottom == 0 && sampleId.y != 0)
         {
-            AddBottomFace(uvs.BottomUV, id);
+            AddBottomFace(uvs.BottomUV, sampleId);
         }
     }
 }

@@ -99,7 +99,7 @@ public class ChunkMesh
     void CreateBuffers() {
         trianglesBuffer = new ComputeBuffer(ChunkMetrics.blocksPerChunk * 12, Triangle.SizeOf, ComputeBufferType.Append);
         trianglesCountBuffer = new ComputeBuffer(1, sizeof(int), ComputeBufferType.Raw);
-        blocksBuffer = new ComputeBuffer(ChunkMetrics.blocksPerChunk, sizeof(int));
+        blocksBuffer = new ComputeBuffer(ChunkMetrics.noisePerChunk, sizeof(int));
         blockTypeAtlasBuffer = new ComputeBuffer(blockAtlas.BlockUvs.Length, BlockTypeUvs.SizeOf);
     }
 
