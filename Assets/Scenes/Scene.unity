@@ -358,6 +358,7 @@ GameObject:
   - component: {fileID: 1511488074}
   - component: {fileID: 1511488076}
   - component: {fileID: 1511488077}
+  - component: {fileID: 1511488078}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -377,9 +378,9 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 2
   m_Height: 2
-  m_Radius: 0.5
+  m_Radius: 0.3
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
@@ -391,7 +392,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1511488073}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 170, z: 0}
+  m_LocalPosition: {x: 0, y: 92, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 963194228}
@@ -427,6 +428,20 @@ MonoBehaviour:
   speed: 7
   gravity: -9.81
   jumpHeight: 1.3
+--- !u!114 &1511488078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511488073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 792233b774aa6214db6e383be446ed1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 963194227}
+  chunkManager: {fileID: 1301897451}
 --- !u!1 &1603989936
 GameObject:
   m_ObjectHideFlags: 0

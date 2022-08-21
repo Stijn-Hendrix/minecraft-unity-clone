@@ -86,4 +86,6 @@ public class Chunk : MonoBehaviour
             print($"Chunk refresh - Time elapsed: {stopwatch.Elapsed.TotalMilliseconds} ms");
         }
     }
+
+
 }

@@ -79,6 +79,14 @@ public class ChunkManager : MonoBehaviour
 		}
 	}
 
+	public Chunk GetChunk(int x, int z) {
+		Vector2Int key = new Vector2Int(x, z);
+		if (chunksDict.ContainsKey(key)) {
+			return chunksDict[key];
+		}
+		return null;
+	}
+
 	Chunk CreateChunk(int x, int z) {
 
 		Chunk chunk = Instantiate(chunkPrefab, transform);
