@@ -11,7 +11,7 @@ public static class ChunkMetrics
 
     // must be divible by 8
     public const int chunkWidth = 16;
-    public const int chunkHeight = 128;
+    public const int chunkHeight = 256;
 
     public const int blocksPerChunk = chunkWidth * chunkWidth * chunkHeight;
     public const int noisePerChunk = (chunkWidth + 2) * (chunkWidth + 2) * chunkHeight;

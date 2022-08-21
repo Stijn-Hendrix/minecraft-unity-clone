@@ -7,8 +7,9 @@ public class ChunkEdit : MonoBehaviour
 	public Camera cam;
     public ChunkManager chunkManager;
 
-	private void Update() {
+    public CharacterController controller;
 
+	private void Update() {
 		if (Input.GetKeyDown(KeyCode.Mouse0)) {
             RemoveBlock();
         }
@@ -23,13 +24,14 @@ public class ChunkEdit : MonoBehaviour
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out hit)) {
+            Vector3 offsetPosition = hit.point + cam.transform.forward * 0.01f;
 
-            var hitChunk = hit.transform.GetComponent<Chunk>();
+            Vector2Int offsetChunkPosition = ChunkManager.ChunkFromWorldPosition(offsetPosition.x, offsetPosition.z);
+            Chunk offsetChunk = chunkManager.GetChunk(offsetChunkPosition.x, offsetChunkPosition.y);
 
-            Vector3 offsetPosition = hit.point + cam.transform.forward * 0.1f;
+            Vector3Int localPosition = ChunkManager.LocalPositionFromWorldPosition(offsetChunk, offsetPosition);
 
-            Vector3Int localPosition = LocalPositionFromGlobal(hitChunk, offsetPosition);
-            EditChunk(hitChunk, localPosition, 0);
+            EditChunk(offsetChunk, localPosition, 0);
         }
     }
 
@@ -38,13 +40,20 @@ public class ChunkEdit : MonoBehaviour
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out hit)) {
+            Vector3 offsetPosition = hit.point - cam.transform.forward * 0.01f;
 
-            var hitChunk = hit.transform.GetComponent<Chunk>();
 
-            Vector3 offsetPosition = hit.point - cam.transform.forward * 0.1f;
+            Vector2Int offsetChunkPosition = ChunkManager.ChunkFromWorldPosition(offsetPosition.x, offsetPosition.z);
+            Chunk offsetChunk = chunkManager.GetChunk(offsetChunkPosition.x, offsetChunkPosition.y);
 
-            Vector3Int localPosition = LocalPositionFromGlobal(hitChunk, offsetPosition);
-            EditChunk(hitChunk, localPosition, 1);
+            Vector3Int localPosition = ChunkManager.LocalPositionFromWorldPosition(offsetChunk, offsetPosition);
+
+            Bounds blockBound = new Bounds(offsetPosition, Vector3.one * 1.5f);
+            if (controller.bounds.Intersects(blockBound)) {
+                return;
+            }
+
+            EditChunk(offsetChunk, localPosition, 1);
         }
     }
 
@@ -104,11 +113,4 @@ public class ChunkEdit : MonoBehaviour
         return x + (ChunkMetrics.chunkWidth + 2) * (y + ChunkMetrics.chunkHeight * z);
     }
 
-    public Vector3Int LocalPositionFromGlobal(Chunk chunk, Vector3 globalPosition) {
-        int x = Mathf.FloorToInt(globalPosition.x - (ChunkMetrics.chunkWidth * chunk.Position.x));
-        int y = Mathf.FloorToInt(globalPosition.y);
-        int z = Mathf.FloorToInt(globalPosition.z - (ChunkMetrics.chunkWidth * chunk.Position.y));
-
-        return new Vector3Int(x, y, z);
-    }
 }

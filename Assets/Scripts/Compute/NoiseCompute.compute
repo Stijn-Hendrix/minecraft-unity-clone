@@ -31,7 +31,16 @@ void GenerateNoise(uint3 id : SV_DispatchThreadID)
     // Sample the noise so that there exist edges around the chunk
     float n = _ChunkSizeHeight * _GroundPercent + fnlGetNoise3D(noise, id.x + _PositionOffset.x - 1, id.y + _PositionOffset.y, id.z + _PositionOffset.z - 1) * _Amplitude;
 
+    float above = _ChunkSizeHeight * _GroundPercent + fnlGetNoise3D(noise, id.x + _PositionOffset.x - 1, id.y + 5 + _PositionOffset.y, id.z + _PositionOffset.z - 1) * _Amplitude;
+
+    above = id.y >= above ? 0 : 1;
+
     n = id.y >= n ? 0 : 1;
+
+    if (above == 1)
+    {
+        n = 2;
+    }
 
     _Noise[indexFromCoord(id.x, id.y, id.z)] = int(round(n));
 }

@@ -10,8 +10,6 @@ public class ChunkManager : MonoBehaviour
 
 	public Transform player;
 
-	List<Chunk> chunks = new List<Chunk>();
-
 	Dictionary<Vector2Int, Chunk> chunksDict = new Dictionary<Vector2Int, Chunk>();
 
 	Queue<Chunk> buildQueue = new Queue<Chunk>();
@@ -50,7 +48,7 @@ public class ChunkManager : MonoBehaviour
 	private void UpdateChunks() {
 		Vector3 playerPosition = player.transform.position;
 
-		currentPlayerChunk = ChunkFromPosition(playerPosition.x, playerPosition.z);
+		currentPlayerChunk = ChunkFromWorldPosition(playerPosition.x, playerPosition.z);
 
 		if (currentPlayerChunk != previousPlayerChunk) {
 
@@ -103,12 +101,20 @@ public class ChunkManager : MonoBehaviour
 		return chunk;
 	}
 
-	public static Vector2Int ChunkFromPosition(float x, float z) {
+	public static Vector2Int ChunkFromWorldPosition(float x, float z) {
 		Vector2Int v = new Vector2Int(
-			Mathf.FloorToInt(x / (ChunkMetrics.chunkWidth + 1)),
-			Mathf.FloorToInt(z / (ChunkMetrics.chunkWidth + 1))
+			Mathf.FloorToInt((x - 1) / (ChunkMetrics.chunkWidth)),
+			Mathf.FloorToInt((z - 1) / (ChunkMetrics.chunkWidth))
 		);
 		return v;
+	}
+
+	public static Vector3Int LocalPositionFromWorldPosition(Chunk chunk, Vector3 globalPosition) {
+		int x = Mathf.FloorToInt(globalPosition.x) - (ChunkMetrics.chunkWidth * chunk.Position.x);
+		int y = Mathf.FloorToInt(globalPosition.y);
+		int z = Mathf.FloorToInt(globalPosition.z) - (ChunkMetrics.chunkWidth * chunk.Position.y);
+
+		return new Vector3Int(x, y, z);
 	}
 
 	bool InRenderDistance(Vector2Int a, Vector2Int b, int chunkRenderingDistance) {
