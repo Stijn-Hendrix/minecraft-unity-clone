@@ -5,7 +5,9 @@ using UnityEngine;
 public class Chunk : MonoBehaviour
 {
     [Header("-- Display --")]
+    public bool showCreationTime = false;
     public MeshFilter meshFilter;
+    public MeshCollider meshCollider;
 
     [Header("-- Compute --")]
     public ComputeShader triangulateShader;
@@ -18,23 +20,57 @@ public class Chunk : MonoBehaviour
     ChunkMesh chunkMesh;
     ChunkNoise chunkNoise;
 
-	[ContextMenu("Create")]
+    public int[] Blocks => chunkNoise.Noise;
+
+    System.Diagnostics.Stopwatch stopwatch;
+
+    [ContextMenu("Create")]
     public void Create() {
-      
+        StartStopWatch();
 
         chunkNoise = new ChunkNoise(noiseShader, seed, transform.localPosition);
-
-        System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-        stopwatch.Start();
         chunkMesh = new ChunkMesh(blockAtlas, triangulateShader);
 
-        meshFilter.mesh = chunkMesh.Create(chunkNoise.Noise);
+        meshFilter.sharedMesh = 
+            meshCollider.sharedMesh = chunkMesh.Create(Blocks);
 
-        stopwatch.Stop();
-        //print($"Chunk creation - Time elapsed: {stopwatch.Elapsed.TotalMilliseconds} ms");
+        FinishCreationStopWatch();
+
+        enabled = false;
     }
-	
-	int IndexFromCoord(int x, int y, int z) {
-        return x + ChunkMetrics.chunkWidth * (y + ChunkMetrics.chunkWidth * z);
+
+    public void Refresh() {
+        enabled = true;
+	}
+
+	private void LateUpdate() {
+        StartStopWatch();
+
+        meshFilter.sharedMesh =
+            meshCollider.sharedMesh = chunkMesh.Create(Blocks);
+
+        FinishRefreshStopWatch();
+        enabled = false;
+    }
+
+	void StartStopWatch() {
+        if (showCreationTime) {
+            stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+        }
+    }
+
+    void FinishCreationStopWatch() {
+        if (showCreationTime) {
+            stopwatch.Stop();
+            print($"Chunk creation - Time elapsed: {stopwatch.Elapsed.TotalMilliseconds} ms");
+        }
+    }
+
+    void FinishRefreshStopWatch() {
+        if (showCreationTime) {
+            stopwatch.Stop();
+            print($"Chunk refresh - Time elapsed: {stopwatch.Elapsed.TotalMilliseconds} ms");
+        }
     }
 }

@@ -91,6 +91,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1126414117410449547}
   - component: {fileID: 1126414117410449546}
+  - component: {fileID: 6581905898877622215}
   m_Layer: 0
   m_Name: Chunk
   m_TagString: Untagged
@@ -120,13 +121,29 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1126414117410449540}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 73e5d4fffac9b2847bb91876a8e6729a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showCreationTime: 0
   meshFilter: {fileID: 1126414117215528277}
+  meshCollider: {fileID: 6581905898877622215}
   triangulateShader: {fileID: 7200000, guid: 8bc142b8912153e43b403ed84242e92f, type: 3}
   noiseShader: {fileID: 7200000, guid: 2417bd0d62d8e0347b8e514b31f317e0, type: 3}
   seed: 14
   blockAtlas: {fileID: 11400000, guid: c8d4b448d4e920040b1329ebde2a4166, type: 2}
+--- !u!64 &6581905898877622215
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126414117410449540}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}

@@ -4,6 +4,19 @@
 
 static const int computeThreads = 8;
 
+static const float3 cubeVertices[] = {
+    float3(0, 0, 0),
+    float3(0, 1, 0),
+    float3(1, 0, 0),
+    float3(1, 1, 0),
+    float3(0, 1, 1),
+    float3(1, 1, 1),
+    float3(0, 0, 1),
+    float3(1, 0, 1),
+};
+
+static const int sizeOfTextureInAtlas = 16;
+
 RWStructuredBuffer<int> _Blocks;
 
 struct BlockTypeUvs {
@@ -19,138 +32,138 @@ struct Triangle {
     float2 uv_a, uv_b, uv_c;
 };
 
-
 AppendStructuredBuffer<Triangle> _Triangles;
 
 void AddTopFace(float2 uvs, float3 offset)
 {
     Triangle tri0;
-    tri0.v_a = float3(0, 1, 0) + offset;
-    tri0.v_b = float3(0, 1, 1) + offset;
-    tri0.v_c = float3(1, 1, 0) + offset;
-    tri0.uv_a = float2(uvs.x, uvs.y) / 16;
-    tri0.uv_b = float2(uvs.x, uvs.y + 1) / 16;
-    tri0.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    tri0.v_a = cubeVertices[1] + offset;
+    tri0.v_b = cubeVertices[4] + offset;
+    tri0.v_c = cubeVertices[3] + offset;
+    tri0.uv_a = float2(uvs.x, uvs.y) / sizeOfTextureInAtlas;
+    tri0.uv_b = float2(uvs.x, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri0.uv_c = float2(uvs.x + 1, uvs.y) / sizeOfTextureInAtlas;
     _Triangles.Append(tri0);
 
     Triangle tri1;
-    tri1.v_a = float3(0, 1, 1) + offset;
-    tri1.v_b = float3(1, 1, 1) + offset;
-    tri1.v_c = float3(1, 1, 0) + offset;
-    tri1.uv_a = float2(uvs.x, uvs.y + 1) / 16;
-    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / 16;
-    tri1.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    tri1.v_a = cubeVertices[4] + offset;
+    tri1.v_b = cubeVertices[5] + offset;
+    tri1.v_c = cubeVertices[3] + offset;
+    tri1.uv_a = float2(uvs.x, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri1.uv_c = float2(uvs.x + 1, uvs.y) / sizeOfTextureInAtlas;
     _Triangles.Append(tri1);
 }
 
 void AddRightFace(float2 uvs, float3 offset )
 {
     Triangle tri0;
-    tri0.v_a = float3(1, 0, 0) + offset;
-    tri0.v_b = float3(1, 1, 0) + offset;
-    tri0.v_c = float3(1, 0, 1) + offset;
-    tri0.uv_a = float2(uvs.x, uvs.y) / 16;
-    tri0.uv_b = float2(uvs.x, uvs.y + 1) / 16;
-    tri0.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    tri0.v_a = cubeVertices[2] + offset;
+    tri0.v_b = cubeVertices[3] + offset;
+    tri0.v_c = cubeVertices[7] + offset;
+    tri0.uv_a = float2(uvs.x, uvs.y) / sizeOfTextureInAtlas;
+    tri0.uv_b = float2(uvs.x, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri0.uv_c = float2(uvs.x + 1, uvs.y) / sizeOfTextureInAtlas;
     _Triangles.Append(tri0);
 
     Triangle tri1;
-    tri1.v_a = float3(1, 1, 0) + offset;
-    tri1.v_b = float3(1, 1, 1) + offset;
-    tri1.v_c = float3(1, 0, 1) + offset;
-    tri1.uv_a = float2(uvs.x, uvs.y + 1) / 16;
-    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / 16;
-    tri1.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    tri1.v_a = cubeVertices[3] + offset;
+    tri1.v_b = cubeVertices[5] + offset;
+    tri1.v_c = cubeVertices[7] + offset;
+    tri1.uv_a = float2(uvs.x, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri1.uv_c = float2(uvs.x + 1, uvs.y) / sizeOfTextureInAtlas;
     _Triangles.Append(tri1);
 }
 
 void AddFrontFace(float2 uvs, float3 offset )
 {
     Triangle tri0;
-    tri0.v_a = float3(0, 0, 0) + offset;
-    tri0.v_b = float3(0, 1, 0) + offset;
-    tri0.v_c = float3(1, 0, 0) + offset;
-    tri0.uv_a = float2(uvs.x, uvs.y) / 16;
-    tri0.uv_b = float2(uvs.x, uvs.y + 1) / 16;
-    tri0.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    tri0.v_a = cubeVertices[0] + offset;
+    tri0.v_b = cubeVertices[1] + offset;
+    tri0.v_c = cubeVertices[2] + offset;
+    tri0.uv_a = float2(uvs.x, uvs.y) / sizeOfTextureInAtlas;
+    tri0.uv_b = float2(uvs.x, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri0.uv_c = float2(uvs.x + 1, uvs.y) / sizeOfTextureInAtlas;
     _Triangles.Append(tri0);
 
     Triangle tri1;
-    tri1.v_a = float3(0, 1, 0) + offset;
-    tri1.v_b = float3(1, 1, 0) + offset;
-    tri1.v_c = float3(1, 0, 0) + offset;
-    tri1.uv_a = float2(uvs.x, uvs.y + 1) / 16;
-    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / 16;
-    tri1.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    tri1.v_a = cubeVertices[1] + offset;
+    tri1.v_b = cubeVertices[3] + offset;
+    tri1.v_c = cubeVertices[2] + offset;
+    tri1.uv_a = float2(uvs.x, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri1.uv_c = float2(uvs.x + 1, uvs.y) / sizeOfTextureInAtlas;
     _Triangles.Append(tri1);
 }
 
 void AddLeftFace(float2 uvs, float3 offset )
 {
     Triangle tri0;
-    tri0.v_a = float3(0, 0, 1) + offset;
-    tri0.v_b = float3(0, 1, 1) + offset;
-    tri0.v_c = float3(0, 0, 0) + offset;
-    tri0.uv_a = float2(uvs.x, uvs.y) / 16;
-    tri0.uv_b = float2(uvs.x, uvs.y + 1) / 16;
-    tri0.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    tri0.v_a = cubeVertices[6] + offset;
+    tri0.v_b = cubeVertices[4] + offset;
+    tri0.v_c = cubeVertices[0] + offset;
+    tri0.uv_a = float2(uvs.x, uvs.y) / sizeOfTextureInAtlas;
+    tri0.uv_b = float2(uvs.x, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri0.uv_c = float2(uvs.x + 1, uvs.y) / sizeOfTextureInAtlas;
     _Triangles.Append(tri0);
 
     Triangle tri1;
-    tri1.v_a = float3(0, 1, 1) + offset;
-    tri1.v_b = float3(0, 1, 0) + offset;
-    tri1.v_c = float3(0, 0, 0) + offset;
-    tri1.uv_a = float2(uvs.x, uvs.y + 1) / 16;
-    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / 16;
-    tri1.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    tri1.v_a = cubeVertices[4] + offset;
+    tri1.v_b = cubeVertices[1] + offset;
+    tri1.v_c = cubeVertices[0] + offset;
+    tri1.uv_a = float2(uvs.x, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri1.uv_c = float2(uvs.x + 1, uvs.y) / sizeOfTextureInAtlas;
     _Triangles.Append(tri1);
 }
 
 void AddBackFace(float2 uvs, float3 offset )
 {
     Triangle tri0;
-    tri0.v_a = float3(1, 0, 1) + offset;
-    tri0.v_b = float3(1, 1, 1) + offset;
-    tri0.v_c = float3(0, 0, 1) + offset;
-    tri0.uv_a = float2(uvs.x, uvs.y) / 16;
-    tri0.uv_b = float2(uvs.x, uvs.y + 1) / 16;
-    tri0.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    tri0.v_a = cubeVertices[7] + offset;
+    tri0.v_b = cubeVertices[5] + offset;
+    tri0.v_c = cubeVertices[6] + offset;
+    tri0.uv_a = float2(uvs.x, uvs.y) / sizeOfTextureInAtlas;
+    tri0.uv_b = float2(uvs.x, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri0.uv_c = float2(uvs.x + 1, uvs.y) / sizeOfTextureInAtlas;
     _Triangles.Append(tri0);
 
     Triangle tri1;
-    tri1.v_a = float3(1, 1, 1) + offset;
-    tri1.v_b = float3(0, 1, 1) + offset;
-    tri1.v_c = float3(0, 0, 1) + offset;
-    tri1.uv_a = float2(uvs.x, uvs.y + 1) / 16;
-    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / 16;
-    tri1.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    tri1.v_a = cubeVertices[5] + offset;
+    tri1.v_b = cubeVertices[4] + offset;
+    tri1.v_c = cubeVertices[6] + offset;
+    tri1.uv_a = float2(uvs.x, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri1.uv_c = float2(uvs.x + 1, uvs.y) / sizeOfTextureInAtlas;
     _Triangles.Append(tri1);
 }
 
 void AddBottomFace(float2 uvs, float3 offset )
 {
     Triangle tri0;
-    tri0.v_a = float3(0, 0, 0) + offset;
-    tri0.v_b = float3(1, 0, 0) + offset;
-    tri0.v_c = float3(0, 0, 1) + offset;
-    tri0.uv_a = float2(uvs.x, uvs.y) / 16;
-    tri0.uv_b = float2(uvs.x, uvs.y + 1) / 16;
-    tri0.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    tri0.v_a = cubeVertices[0] + offset;
+    tri0.v_b = cubeVertices[2] + offset;
+    tri0.v_c = cubeVertices[6] + offset;
+    tri0.uv_a = float2(uvs.x, uvs.y) / sizeOfTextureInAtlas;
+    tri0.uv_b = float2(uvs.x, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri0.uv_c = float2(uvs.x + 1, uvs.y) / sizeOfTextureInAtlas;
     _Triangles.Append(tri0);
 
     Triangle tri1;
-    tri1.v_a = float3(1, 0, 0) + offset;
-    tri1.v_b = float3(1, 0, 1) + offset;
-    tri1.v_c = float3(0, 0, 1) + offset;
-    tri1.uv_a = float2(uvs.x, uvs.y + 1) / 16;
-    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / 16;
-    tri1.uv_c = float2(uvs.x + 1, uvs.y) / 16;
+    tri1.v_a = cubeVertices[2] + offset;
+    tri1.v_b = cubeVertices[7] + offset;
+    tri1.v_c = cubeVertices[6] + offset;
+    tri1.uv_a = float2(uvs.x, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / sizeOfTextureInAtlas;
+    tri1.uv_c = float2(uvs.x + 1, uvs.y) / sizeOfTextureInAtlas;
     _Triangles.Append(tri1);
 }
 
 [numthreads( computeThreads, computeThreads, computeThreads )]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
+    // Sample the noise inside of the edges of the chunk
     uint3 sampleId = uint3(id.x + 1, id.y, id.z + 1);
 
     int index = indexFromCoord(sampleId.x, sampleId.y, sampleId.z);

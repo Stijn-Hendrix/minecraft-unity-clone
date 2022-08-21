@@ -10,8 +10,8 @@ public static class ChunkMetrics
     public const int dispatchThreadsHeight = chunkHeight / computeThreads;
 
     // must be divible by 8
-    public const int chunkWidth = 8;
-    public const int chunkHeight = 16;
+    public const int chunkWidth = 16;
+    public const int chunkHeight = 256;
 
     public const int blocksPerChunk = chunkWidth * chunkWidth * chunkHeight;
     public const int noisePerChunk = (chunkWidth + 2) * (chunkWidth + 2) * chunkHeight;
