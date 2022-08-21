@@ -1,10 +1,10 @@
 ﻿#pragma kernel GenerateNoise
 
-#include "Includes\FastNoiseLite.compute"
+#include "Includes/FastNoiseLite.cginc"
+#include "Includes/ChunkData.cginc"
 
 static const uint computeThreads = 8;
-int _ChunkSizeHeight;
-int _ChunkSizeWidth;
+
 
 int _NoiseSeed;
 
@@ -15,10 +15,6 @@ RWStructuredBuffer<int> _Noise;
 static float _GroundPercent = 0.6f;
 static float _Amplitude = 10;
 
-int indexFromCoord(int x, int y, int z)
-{
-    return x + _ChunkSizeWidth * (y + _ChunkSizeHeight * z);
-}
 
 [numthreads(computeThreads, computeThreads, computeThreads)]
 void GenerateNoise(uint3 id : SV_DispatchThreadID)
@@ -26,8 +22,6 @@ void GenerateNoise(uint3 id : SV_DispatchThreadID)
     fnl_state noise = fnlCreateState(_NoiseSeed);
     noise.noise_type = FNL_NOISE_OPENSIMPLEX2;
     noise.fractal_type = FNL_FRACTAL_RIDGED;
-
-    //float n = fnlGetNoise3D(noise, id.x, id.y, id.z) + 1;
 
     float n = _ChunkSizeHeight * _GroundPercent + fnlGetNoise3D(noise, id.x + _PositionOffset.x, id.y + _PositionOffset.y, id.z + _PositionOffset.z) * _Amplitude;
 

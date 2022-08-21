@@ -31,7 +31,7 @@ public class Chunk : MonoBehaviour
         meshFilter.mesh = chunkMesh.Create(chunkNoise.Noise);
 
         stopwatch.Stop();
-        print($"Chunk creation - Time elapsed: {stopwatch.Elapsed.TotalMilliseconds} ms");
+        //print($"Chunk creation - Time elapsed: {stopwatch.Elapsed.TotalMilliseconds} ms");
     }
 	
 	int IndexFromCoord(int x, int y, int z) {

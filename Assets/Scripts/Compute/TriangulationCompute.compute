@@ -1,9 +1,8 @@
 ﻿#pragma kernel CSMain
 
-static const int computeThreads = 8;
-int _ChunkSizeHeight = 16;
-int _ChunkSizeWidth = 16;
+#include "Includes/ChunkData.cginc"
 
+static const int computeThreads = 8;
 
 RWStructuredBuffer<int> _Blocks;
 
@@ -147,12 +146,6 @@ void AddBottomFace(float2 uvs, float3 offset )
     tri1.uv_b = float2(uvs.x + 1, uvs.y + 1) / 16;
     tri1.uv_c = float2(uvs.x + 1, uvs.y) / 16;
     _Triangles.Append(tri1);
-}
-
-
-int indexFromCoord(int x, int y, int z)
-{
-    return x + _ChunkSizeWidth * (y + _ChunkSizeHeight * z);
 }
 
 [numthreads( computeThreads, computeThreads, computeThreads )]
