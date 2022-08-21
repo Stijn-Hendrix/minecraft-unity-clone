@@ -37,7 +37,7 @@ public class ChunkManager : MonoBehaviour
 		UpdateChunks();
 
 		// Update the build queue
-		buildTime -= Time.deltaTime * 200;
+		buildTime -= Time.deltaTime * 150f;
 		if (buildTime <= 0) {
 			if (buildQueue.Count > 0) {
 				var chunk = buildQueue.Dequeue();
@@ -54,11 +54,9 @@ public class ChunkManager : MonoBehaviour
 
 		if (currentPlayerChunk != previousPlayerChunk) {
 
-			for (int i = chunks.Count - 1; i >= 0; i--) {
-				Chunk chunk = chunks[i];
-
-				if (!InRenderDistance(chunk.Position, currentPlayerChunk, renderDistance)) {
-					chunk.Visible = false;
+			foreach (var keypair in chunksDict) {
+				if (!InRenderDistance(keypair.Value.Position, currentPlayerChunk, renderDistance)) {
+					keypair.Value.Visible = false;
 				}
 			}
 
