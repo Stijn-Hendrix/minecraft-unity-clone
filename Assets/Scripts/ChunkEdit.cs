@@ -9,8 +9,32 @@ public class ChunkEdit : MonoBehaviour
 
     public CharacterController controller;
 
+    public GameObject highlight;
+
 	private void Update() {
-		if (Input.GetKeyDown(KeyCode.Mouse0)) {
+        if (Input.GetKey(KeyCode.LeftShift)) {
+            RaycastHit hit;
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit)) {
+                Vector3 offsetPosition = hit.point - cam.transform.forward * 0.01f;
+
+                offsetPosition.x = Mathf.FloorToInt(offsetPosition.x) + 0.5f;
+                offsetPosition.y = Mathf.FloorToInt(offsetPosition.y) + 0.5f;
+                offsetPosition.z = Mathf.FloorToInt(offsetPosition.z) + 0.5f;
+
+                highlight.SetActive(true);
+                highlight.transform.position = offsetPosition;
+            }
+            else {
+                highlight.SetActive(false);
+            }
+        }
+        else {
+            highlight.SetActive(false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Mouse0)) {
             RemoveBlock();
         }
 
