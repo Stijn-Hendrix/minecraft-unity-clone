@@ -16,6 +16,9 @@ public class ChunkEdit : MonoBehaviour
 
     public GameObject highlight;
 
+    float addBlockCooldown = 0f;
+    float removeBlockCooldown = 0f;
+
 
 	private void Update() {
         if (Input.GetKey(KeyCode.LeftControl)) {
@@ -41,12 +44,23 @@ public class ChunkEdit : MonoBehaviour
         }
 
         if (Input.GetKey(KeyCode.Mouse0)) {
-            RemoveBlock();
+            removeBlockCooldown -= Time.deltaTime * 10;
+
+            if (removeBlockCooldown <= 0) {
+                RemoveBlock();
+                removeBlockCooldown = 1f;
+            }
         }
 
       
         if (Input.GetKey(KeyCode.Mouse1)) {
-            AddBlock();
+            addBlockCooldown -= Time.deltaTime * 10;
+
+            if (addBlockCooldown <= 0) {
+                AddBlock();
+                addBlockCooldown = 1f;
+			}
+
         }
 
         if (Input.GetKey(KeyCode.Mouse0) || Input.GetKey(KeyCode.Mouse1)) {

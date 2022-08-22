@@ -14,7 +14,6 @@ public class ChunkManager : MonoBehaviour
 	Dictionary<Vector2Int, Chunk> chunksDict = new Dictionary<Vector2Int, Chunk>();
 
 	Queue<Chunk> buildQueue = new Queue<Chunk>();
-	float buildTime = 1f;
 
 	Vector2Int currentPlayerChunk = Vector2Int.one;
 	Vector2Int previousPlayerChunk = Vector2Int.zero;
