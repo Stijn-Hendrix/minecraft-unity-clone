@@ -52,6 +52,16 @@ public class Chunk : MonoBehaviour
         enabled = false;
     }
 
+    public void Cleanup() {
+        if (meshCollider.sharedMesh != null) {
+            meshCollider.sharedMesh.Clear();
+            meshFilter.sharedMesh.Clear();
+		}
+
+        chunkNoise = null;
+        chunkMesh = null;
+    }
+
     public void Refresh() {
         enabled = true;
 	}

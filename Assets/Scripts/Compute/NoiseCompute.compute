@@ -92,5 +92,5 @@ void GenerateNoise(uint3 id : SV_DispatchThreadID)
     int block = BlockAt(id.y, samplePos, ground, ground1, biome);
 
     
-   _Noise[indexFromCoord(id.x, id.y, id.z)] = int(round(block));
+   _Noise[indexFromCoord(id.x, id.y, id.z)] = block;
 }

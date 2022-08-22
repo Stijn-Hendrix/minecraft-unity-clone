@@ -21,30 +21,24 @@ public class ChunkEdit : MonoBehaviour
 
 
 	private void Update() {
-        if (Input.GetKey(KeyCode.LeftControl)) {
-            RaycastHit hit;
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, editDistance, editLayerMask)) {
+            Vector3 offsetPosition = hit.point + cam.transform.forward * 0.01f;
 
-            if (Physics.Raycast(ray, out hit, editDistance, editLayerMask)) {
-                Vector3 offsetPosition = hit.point - cam.transform.forward * 0.01f;
+            offsetPosition.x = Mathf.FloorToInt(offsetPosition.x) + 0.5f;
+            offsetPosition.y = Mathf.FloorToInt(offsetPosition.y) + 0.5f;
+            offsetPosition.z = Mathf.FloorToInt(offsetPosition.z) + 0.5f;
 
-                offsetPosition.x = Mathf.FloorToInt(offsetPosition.x) + 0.5f;
-                offsetPosition.y = Mathf.FloorToInt(offsetPosition.y) + 0.5f;
-                offsetPosition.z = Mathf.FloorToInt(offsetPosition.z) + 0.5f;
-
-                highlight.SetActive(true);
-                highlight.transform.position = offsetPosition;
-            }
-            else {
-                highlight.SetActive(false);
-            }
+            highlight.SetActive(true);
+            highlight.transform.position = offsetPosition;
         }
         else {
             highlight.SetActive(false);
         }
+      
 
         if (Input.GetKey(KeyCode.Mouse0)) {
-            removeBlockCooldown -= Time.deltaTime * 10;
+            removeBlockCooldown -= Time.deltaTime * 15;
 
             if (removeBlockCooldown <= 0) {
                 RemoveBlock();
@@ -54,7 +48,7 @@ public class ChunkEdit : MonoBehaviour
 
       
         if (Input.GetKey(KeyCode.Mouse1)) {
-            addBlockCooldown -= Time.deltaTime * 10;
+            addBlockCooldown -= Time.deltaTime * 15;
 
             if (addBlockCooldown <= 0) {
                 AddBlock();
@@ -70,9 +64,7 @@ public class ChunkEdit : MonoBehaviour
 
     void RemoveBlock() {
         RaycastHit hit;
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out hit, editDistance, editLayerMask)) {
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, editDistance, editLayerMask)) {
             Vector3 offsetPosition = hit.point + cam.transform.forward * 0.01f;
 
             Vector2Int offsetChunkPosition = ChunkManager.ChunkFromWorldPosition(offsetPosition.x, offsetPosition.z);
@@ -86,9 +78,7 @@ public class ChunkEdit : MonoBehaviour
 
     void AddBlock() {
         RaycastHit hit;
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out hit, editDistance, editLayerMask)) {
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, editDistance, editLayerMask)) {
             Vector3 offsetPosition = hit.point - cam.transform.forward * 0.01f;
 
 
