@@ -15,6 +15,48 @@ RWStructuredBuffer<int> _Noise;
 static float _GroundPercent = 0.6f;
 static float _Amplitude = 20;
 
+int CheckBlockAt(float y, float3 samplePos, fnl_state ground, fnl_state ground1, fnl_state biome)
+{
+    float groundMask = (fnlGetNoise2D(ground1, samplePos.x, samplePos.z) + 1) / 2;
+    float groundSample = (_ChunkSizeHeight * _GroundPercent + fnlGetNoise3D(ground, samplePos.x, samplePos.y, samplePos.z) * (_Amplitude * groundMask));
+
+    bool isGround = y <= groundSample;
+
+    int block = 0;
+
+    if (isGround)
+    {
+        int biomeNoise = int(fnlGetNoise2D(biome, samplePos.x, samplePos.z) + 2); // range: 1 - 2
+
+        block = biomeNoise;
+    }
+    return block;
+}
+
+int BlockAt(float y, float3 samplePos, fnl_state ground, fnl_state ground1, fnl_state biome)
+{
+    float groundLevel = _ChunkSizeHeight * _GroundPercent;
+
+    int block = CheckBlockAt(y, samplePos, ground, ground1, biome);
+
+    int blockAbove = CheckBlockAt(y + 1, float3(samplePos.x, samplePos.y + 1, samplePos.z), ground, ground1, biome);
+    if (blockAbove == 0 && block == 1)
+    {
+        if (y + 1 > groundLevel)
+        {
+            block = 3;
+        }
+    }
+
+    float stone = (fnlGetNoise3D(ground, samplePos.x, samplePos.y, samplePos.z) * (_Amplitude * 0.1));
+
+    if (block != 0)
+    {
+        block = stone > 0 ? block : 4;
+    }
+
+    return block;
+}
 
 [numthreads(computeThreads, computeThreads, computeThreads)]
 void GenerateNoise(uint3 id : SV_DispatchThreadID)
@@ -24,23 +66,31 @@ void GenerateNoise(uint3 id : SV_DispatchThreadID)
         return;
     }
 
-    fnl_state noise = fnlCreateState(_NoiseSeed);
-    noise.noise_type = FNL_NOISE_OPENSIMPLEX2;
-    noise.fractal_type = FNL_FRACTAL_RIDGED;
+    int groundLevel = _ChunkSizeHeight * _GroundPercent;
+
+    fnl_state ground = fnlCreateState(_NoiseSeed);
+    ground.noise_type = FNL_NOISE_OPENSIMPLEX2;
+    ground.fractal_type = FNL_FRACTAL_RIDGED;
+
+    fnl_state ground1 = fnlCreateState(_NoiseSeed + 2);
+    ground1.noise_type = FNL_NOISE_OPENSIMPLEX2;
+    ground1.frequency = 0.001;
+    ground1.octaves = 5;
+
+    fnl_state biome = fnlCreateState(_NoiseSeed + 1);
+    biome.noise_type = FNL_NOISE_OPENSIMPLEX2;
+    biome.fractal_type = FNL_FRACTAL_RIDGED;
+    biome.frequency = 0.001;
 
     // Sample the noise so that there exist edges around the chunk
-    float n = _ChunkSizeHeight * _GroundPercent + fnlGetNoise3D(noise, id.x + _PositionOffset.x - 1, id.y + _PositionOffset.y, id.z + _PositionOffset.z - 1) * _Amplitude;
+    float3 samplePos = float3(
+            float(id.x) + _PositionOffset.x - 1,
+            float(id.y) + _PositionOffset.y,
+            float(id.z) + _PositionOffset.z - 1
+        );
 
-    float above = _ChunkSizeHeight * _GroundPercent + fnlGetNoise3D(noise, id.x + _PositionOffset.x - 1, id.y + 5 + _PositionOffset.y, id.z + _PositionOffset.z - 1) * _Amplitude;
+    int block = BlockAt(id.y, samplePos, ground, ground1, biome);
 
-    above = id.y >= above ? 0 : 1;
-
-    n = id.y >= n ? 0 : 1;
-
-    if (above == 1)
-    {
-        n = 2;
-    }
-
-    _Noise[indexFromCoord(id.x, id.y, id.z)] = int(round(n));
+    
+   _Noise[indexFromCoord(id.x, id.y, id.z)] = int(round(block));
 }

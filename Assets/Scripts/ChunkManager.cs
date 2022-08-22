@@ -6,6 +6,7 @@ public class ChunkManager : MonoBehaviour
 {
 	public Chunk chunkPrefab;
 
+	[Range(2, 20)]
 	public int renderDistance;
 
 	public Transform player;
@@ -24,11 +25,15 @@ public class ChunkManager : MonoBehaviour
 
 		UpdateChunks();
 
+		var stopwatch = new System.Diagnostics.Stopwatch();
+		stopwatch.Start();
 		// Instantly build everything in the build queue
 		while (buildQueue.Count > 0) {
 			var chunk = buildQueue.Dequeue();
 			chunk.Create();
 		}
+		stopwatch.Stop();
+		print($"Initial creation - Time elapsed: {stopwatch.Elapsed.TotalMilliseconds} ms");
 	}
 
 	private void Update() {

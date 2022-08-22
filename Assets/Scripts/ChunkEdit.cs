@@ -7,6 +7,9 @@ public class ChunkEdit : MonoBehaviour
 	public Camera cam;
     public ChunkManager chunkManager;
 
+    public float editDistance = 4f;
+    public LayerMask editLayerMask;
+
     public CharacterController controller;
 
     public GameObject highlight;
@@ -16,7 +19,7 @@ public class ChunkEdit : MonoBehaviour
             RaycastHit hit;
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(ray, out hit)) {
+            if (Physics.Raycast(ray, out hit, editDistance, editLayerMask)) {
                 Vector3 offsetPosition = hit.point - cam.transform.forward * 0.01f;
 
                 offsetPosition.x = Mathf.FloorToInt(offsetPosition.x) + 0.5f;
@@ -47,7 +50,7 @@ public class ChunkEdit : MonoBehaviour
         RaycastHit hit;
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out hit)) {
+        if (Physics.Raycast(ray, out hit, editDistance, editLayerMask)) {
             Vector3 offsetPosition = hit.point + cam.transform.forward * 0.01f;
 
             Vector2Int offsetChunkPosition = ChunkManager.ChunkFromWorldPosition(offsetPosition.x, offsetPosition.z);
@@ -63,7 +66,7 @@ public class ChunkEdit : MonoBehaviour
         RaycastHit hit;
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out hit)) {
+        if (Physics.Raycast(ray, out hit, editDistance, editLayerMask)) {
             Vector3 offsetPosition = hit.point - cam.transform.forward * 0.01f;
 
 
