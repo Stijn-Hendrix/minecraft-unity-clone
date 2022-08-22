@@ -27,11 +27,20 @@ public class ChunkManager : MonoBehaviour
 
 		var stopwatch = new System.Diagnostics.Stopwatch();
 		stopwatch.Start();
-		// Instantly build everything in the build queue
-		while (buildQueue.Count > 0) {
+		// Build most of the build queue
+
+		int count = buildQueue.Count;
+		for (int i = 0; i < count; i++) {
 			var chunk = buildQueue.Dequeue();
-			chunk.Create();
+			if (InRenderDistance(currentPlayerChunk, chunk.Position, Mathf.Max(renderDistance - 2, 2))) {
+				chunk.Create();
+			}
+			else {
+				buildQueue.Enqueue(chunk);
+			}
 		}
+
+		
 		stopwatch.Stop();
 		print($"Initial creation - Time elapsed: {stopwatch.Elapsed.TotalMilliseconds} ms");
 	}
@@ -39,14 +48,13 @@ public class ChunkManager : MonoBehaviour
 	private void Update() {
 		UpdateChunks();
 
-		// Update the build queue
-		buildTime -= Time.deltaTime * 150f;
-		if (buildTime <= 0) {
-			if (buildQueue.Count > 0) {
-				var chunk = buildQueue.Dequeue();
-				chunk.Create();
-			}
-			buildTime = 1f;
+		if (buildQueue.Count > 0) {
+			var chunk = buildQueue.Dequeue();
+			chunk.Create();
+		}
+		if (buildQueue.Count > 0) {
+			var chunk = buildQueue.Dequeue();
+			chunk.Create();
 		}
 	}
 

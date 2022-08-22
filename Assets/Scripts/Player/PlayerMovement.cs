@@ -9,27 +9,37 @@ public class PlayerMovement : MonoBehaviour
     public float gravity = -9.81f;
     public float jumpHeight = 1f;
 
-    public Transform hand;
-    public float handShakeSpeed = 1f;
-    public float handShakeAmount = 1f;
-    Vector3 originalHandpos;
-    float handTime = 0f;
+    public Animator handHandimator;
 
     CharacterController controller;
+
+    bool creativeMode = false;
 
     Vector3 velocity;
 
 	private void Awake() {
         controller = GetComponent<CharacterController>();
-
-        originalHandpos = hand.transform.localPosition;
 	}
 
+    void HandleInput() {
+        if (Input.GetKeyDown(KeyCode.C)) {
+            creativeMode = !creativeMode;
+
+            if (!creativeMode) {
+                velocity.y = -2f;
+            }
+        }
+	}
 
 	void Update() {
-        if (controller.isGrounded && velocity.y < 0) {
+        HandleInput();
+
+        if (!creativeMode && controller.isGrounded && velocity.y < 0) {
             velocity.y = -2f;
         }
+        else if(creativeMode) {
+            velocity.y = 0f;
+		}
 
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
@@ -40,23 +50,29 @@ public class PlayerMovement : MonoBehaviour
             move /= move.magnitude;
         }
 
-        if (move.magnitude > 0.1f) {
-
-            handTime += Time.deltaTime * handShakeSpeed;
-            Vector3 handpos = originalHandpos;
-            handpos.y += Mathf.Sin(handTime) * handShakeAmount;
-            handpos.x += Mathf.Cos(handTime) * handShakeAmount;
-            hand.transform.localPosition = handpos;
-            print("hi");
-        }
+        handHandimator.SetFloat("move", move.magnitude);
 
         if (Input.GetKeyDown(KeyCode.Space) && controller.isGrounded) {
-            Jump();
+            if (!creativeMode) {
+                Jump();
+            }
+			else {
+			}
+        }
+        if (creativeMode) {
+            if (Input.GetKey(KeyCode.Space)) {
+                velocity.y = jumpHeight * 3;
+		    }
+            if (Input.GetKey(KeyCode.LeftShift)) {
+                velocity.y = -jumpHeight * 3;
+            }
         }
 
-        velocity.y += gravity * Time.deltaTime;
+        if (!creativeMode) {
+            velocity.y += gravity * Time.deltaTime;
+		}
 
-        controller.Move(move * speed * Time.deltaTime + velocity * Time.deltaTime);
+        controller.Move(move * ((creativeMode && !controller.isGrounded) ? speed * 3 : speed) * Time.deltaTime + velocity * Time.deltaTime);
     }
 
     void Jump() {

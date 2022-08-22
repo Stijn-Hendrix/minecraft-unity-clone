@@ -12,10 +12,13 @@ public class ChunkEdit : MonoBehaviour
 
     public CharacterController controller;
 
+    public Animator handHandimator;
+
     public GameObject highlight;
 
+
 	private void Update() {
-        if (Input.GetKey(KeyCode.LeftShift)) {
+        if (Input.GetKey(KeyCode.LeftControl)) {
             RaycastHit hit;
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
@@ -37,12 +40,17 @@ public class ChunkEdit : MonoBehaviour
             highlight.SetActive(false);
         }
 
-        if (Input.GetKeyDown(KeyCode.Mouse0)) {
+        if (Input.GetKey(KeyCode.Mouse0)) {
             RemoveBlock();
         }
 
-        if (Input.GetKeyDown(KeyCode.Mouse1)) {
+      
+        if (Input.GetKey(KeyCode.Mouse1)) {
             AddBlock();
+        }
+
+        if (Input.GetKey(KeyCode.Mouse0) || Input.GetKey(KeyCode.Mouse1)) {
+            handHandimator.Play("Punch");
         }
     }
 
