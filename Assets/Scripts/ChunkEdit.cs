@@ -4,20 +4,26 @@ using UnityEngine;
 
 public class ChunkEdit : MonoBehaviour
 {
+    [Header("--- References ---")]
 	public Camera cam;
     public ChunkManager chunkManager;
+    public BlockHighlight blockHighlight;
 
+    [Header("--- Animations ---")]
+    public Animator handHandimator;
+
+    [Header("--- Editing ---")]
+    public CharacterController playerController;
     public float editDistance = 4f;
     public LayerMask editLayerMask;
 
-    public CharacterController controller;
 
-    public Animator handHandimator;
-
-    public GameObject highlight;
 
     float addBlockCooldown = 0f;
     float removeBlockCooldown = 0f;
+
+    const float timeToRemoveBlock = 1f;
+
 
 
 	private void Update() {
@@ -29,21 +35,31 @@ public class ChunkEdit : MonoBehaviour
             offsetPosition.y = Mathf.FloorToInt(offsetPosition.y) + 0.5f;
             offsetPosition.z = Mathf.FloorToInt(offsetPosition.z) + 0.5f;
 
-            highlight.SetActive(true);
-            highlight.transform.position = offsetPosition;
+            blockHighlight.Visible = true;
+            blockHighlight.transform.position = offsetPosition;
         }
         else {
-            highlight.SetActive(false);
+            blockHighlight.Visible = false;
         }
       
 
         if (Input.GetKey(KeyCode.Mouse0)) {
-            removeBlockCooldown -= Time.deltaTime * 15;
+            blockHighlight.BreakVisible = true;
 
-            if (removeBlockCooldown <= 0) {
+            removeBlockCooldown += Time.deltaTime;
+
+            float progress = removeBlockCooldown / timeToRemoveBlock * 100;
+
+            blockHighlight.SetProgress(progress);
+
+            if (removeBlockCooldown >= timeToRemoveBlock) {
                 RemoveBlock();
-                removeBlockCooldown = 1f;
+                removeBlockCooldown = 0;
             }
+        }
+        else {
+            blockHighlight.BreakVisible = false;
+            removeBlockCooldown = 0;
         }
 
       
@@ -88,7 +104,7 @@ public class ChunkEdit : MonoBehaviour
             Vector3Int localPosition = ChunkManager.LocalPositionFromWorldPosition(offsetChunk, offsetPosition);
 
             Bounds blockBound = new Bounds(offsetPosition, Vector3.one * 1.5f);
-            if (controller.bounds.Intersects(blockBound)) {
+            if (playerController.bounds.Intersects(blockBound)) {
                 return;
             }
 
