@@ -38,6 +38,16 @@ MonoBehaviour:
       TopUV: {x: 1, y: 0}
       BottomUV: {x: 1, y: 0}
       SidesUV: {x: 1, y: 0}
+  - Name: Wood
+    BlockTypeUvs:
+      TopUV: {x: 3, y: 2}
+      BottomUV: {x: 3, y: 2}
+      SidesUV: {x: 3, y: 1}
+  - Name: Leave
+    BlockTypeUvs:
+      TopUV: {x: 3, y: 0}
+      BottomUV: {x: 3, y: 0}
+      SidesUV: {x: 3, y: 0}
   - Name: Bedrock
     BlockTypeUvs:
       TopUV: {x: 2, y: 0}

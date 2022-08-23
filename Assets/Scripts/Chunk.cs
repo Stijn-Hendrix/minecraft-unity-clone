@@ -77,22 +77,24 @@ public class Chunk : MonoBehaviour
     }
 
 	void StartStopWatch() {
-        if (showCreationTime) {
-            stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
-        }
+        stopwatch = new System.Diagnostics.Stopwatch();
+        stopwatch.Start();
     }
 
     void FinishCreationStopWatch() {
+        stopwatch.Stop();
         if (showCreationTime) {
-            stopwatch.Stop();
             print($"Chunk creation - Time elapsed: {stopwatch.Elapsed.TotalMilliseconds} ms");
         }
+
+        DebugUI.totalCreationTime += (float)stopwatch.Elapsed.TotalMilliseconds;
+        DebugUI.chunksCreated += 1;
+
     }
 
     void FinishRefreshStopWatch() {
+        stopwatch.Stop();
         if (showCreationTime) {
-            stopwatch.Stop();
             print($"Chunk refresh - Time elapsed: {stopwatch.Elapsed.TotalMilliseconds} ms");
         }
     }
