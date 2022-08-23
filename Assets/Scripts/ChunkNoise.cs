@@ -20,7 +20,7 @@ public class ChunkNoise
     public ChunkNoise(ComputeShader noiseCompute, int seed, Vector3 position) {
         this.noiseCompute = noiseCompute;
         this.seed = seed;
-        this.treesSample = PoissonDiscSampling.Generate(6, 4, new Vector2Int(18, 18), 30, seed + position.GetHashCode());
+        this.treesSample = PoissonDiscSampling.Generate(6, 4, new Vector2Int(ChunkMetrics.chunkWidth + 2, ChunkMetrics.chunkWidth + 2), 30, seed + position.GetHashCode());
 
         CreateBuffers();
 
@@ -98,7 +98,6 @@ public class ChunkNoise
 
     void GenerateNoise(Vector3 position) {
         noiseCompute.SetBuffer(0, "_Noise", noiseBuffer);
-        //noiseCompute.SetInt("_ChunkSize", ChunkMetrics.chunkSize);
         noiseCompute.SetInt("_ChunkSizeWidth", ChunkMetrics.chunkWidth);
         noiseCompute.SetInt("_ChunkSizeHeight", ChunkMetrics.chunkHeight);
         noiseCompute.SetInt("_NoiseSeed", seed);
