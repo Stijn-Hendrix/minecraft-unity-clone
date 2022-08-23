@@ -122,7 +122,7 @@ public class ChunkEdit : MonoBehaviour
                 return;
             }
 
-            EditChunk(offsetChunk, localPosition, 1);
+            EditChunk(offsetChunk, localPosition, 5);
         }
     }
 

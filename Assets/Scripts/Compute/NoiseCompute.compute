@@ -5,15 +5,23 @@
 
 static const uint computeThreads = 8;
 
+static const float4 white = float4(1, 1, 1, 1);
+static const float4 black = float4(0, 0, 0, 1);
 
 int _NoiseSeed;
 
 float3 _PositionOffset;
 
 RWStructuredBuffer<int> _Noise;
+RWStructuredBuffer<int> _TreesSample;
 
 static float _GroundPercent = 0.6f;
 static float _Amplitude = 20;
+
+int treeIndexFromCoord(int x, int y)
+{
+    return x + y * (_ChunkSizeWidth + 2);
+}
 
 int CheckBlockAt(float y, float3 samplePos, fnl_state ground, fnl_state ground1, fnl_state biome)
 {
@@ -33,7 +41,7 @@ int CheckBlockAt(float y, float3 samplePos, fnl_state ground, fnl_state ground1,
     return block;
 }
 
-int BlockAt(float y, float3 samplePos, fnl_state ground, fnl_state ground1, fnl_state biome)
+int BlockAt(float y, float3 samplePos, fnl_state ground, fnl_state ground1, fnl_state biome, uint3 id)
 {
     float groundLevel = _ChunkSizeHeight * _GroundPercent;
 
@@ -52,9 +60,8 @@ int BlockAt(float y, float3 samplePos, fnl_state ground, fnl_state ground1, fnl_
 
     if (block != 0)
     {
-        block = stone > 0 ? block : 4;
+        block = stone > 0 ? block : 2;
     }
-
     return block;
 }
 
@@ -89,7 +96,7 @@ void GenerateNoise(uint3 id : SV_DispatchThreadID)
             float(id.z) + _PositionOffset.z - 1
         );
 
-    int block = BlockAt(id.y, samplePos, ground, ground1, biome);
+    int block = BlockAt(id.y, samplePos, ground, ground1, biome, id);
 
     
    _Noise[indexFromCoord(id.x, id.y, id.z)] = block;
