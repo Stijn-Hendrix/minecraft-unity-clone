@@ -21,8 +21,11 @@ public class BlockHighlight : MonoBehaviour
 		}
 		set {
 			breakBlock.SetActive(value);
+
+			
 		}
 	}
+
 
 	public bool Visible {
 		get {

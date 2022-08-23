@@ -24,19 +24,27 @@ public class ChunkEdit : MonoBehaviour
 
     const float timeToRemoveBlock = 1f;
 
+    Vector3 blockHighlightPosition;
+    Vector3 lastBlockHighlightPosition;
 
 
-	private void Update() {
+    private void Update() {
         RaycastHit hit;
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, editDistance, editLayerMask)) {
-            Vector3 offsetPosition = hit.point + cam.transform.forward * 0.01f;
+            blockHighlightPosition = hit.point + cam.transform.forward * 0.01f;
 
-            offsetPosition.x = Mathf.FloorToInt(offsetPosition.x) + 0.5f;
-            offsetPosition.y = Mathf.FloorToInt(offsetPosition.y) + 0.5f;
-            offsetPosition.z = Mathf.FloorToInt(offsetPosition.z) + 0.5f;
+            blockHighlightPosition.x = Mathf.FloorToInt(blockHighlightPosition.x) + 0.5f;
+            blockHighlightPosition.y = Mathf.FloorToInt(blockHighlightPosition.y) + 0.5f;
+            blockHighlightPosition.z = Mathf.FloorToInt(blockHighlightPosition.z) + 0.5f;
 
             blockHighlight.Visible = true;
-            blockHighlight.transform.position = offsetPosition;
+            blockHighlight.transform.position = blockHighlightPosition;
+
+            if (lastBlockHighlightPosition != blockHighlightPosition) {
+                removeBlockCooldown = 0;
+            }
+
+            lastBlockHighlightPosition = blockHighlightPosition;
         }
         else {
             blockHighlight.Visible = false;
@@ -44,16 +52,22 @@ public class ChunkEdit : MonoBehaviour
       
 
         if (Input.GetKey(KeyCode.Mouse0)) {
-            blockHighlight.BreakVisible = true;
+            if (blockHighlight.Visible) {
+                blockHighlight.BreakVisible = true;
 
-            removeBlockCooldown += Time.deltaTime;
+                removeBlockCooldown += Time.deltaTime;
 
-            float progress = removeBlockCooldown / timeToRemoveBlock * 100;
+                float progress = removeBlockCooldown / timeToRemoveBlock * 100;
 
-            blockHighlight.SetProgress(progress);
+                blockHighlight.SetProgress(progress);
 
-            if (removeBlockCooldown >= timeToRemoveBlock) {
-                RemoveBlock();
+                if (removeBlockCooldown >= timeToRemoveBlock) {
+                    RemoveBlock();
+                    removeBlockCooldown = 0;
+                }
+            }
+            else {
+                blockHighlight.BreakVisible = false;
                 removeBlockCooldown = 0;
             }
         }

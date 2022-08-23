@@ -31,7 +31,7 @@ public class ChunkManager : MonoBehaviour
 		int count = buildQueue.Count;
 		for (int i = 0; i < count; i++) {
 			var chunk = buildQueue.Dequeue();
-			if (InRenderDistance(currentPlayerChunk, chunk.Position, Mathf.Max(renderDistance - 2, 2))) {
+			if (InRenderDistance(currentPlayerChunk, chunk.Position, Mathf.Max(renderDistance / 2, 2))) {
 				chunk.Create();
 			}
 			else {
@@ -47,28 +47,35 @@ public class ChunkManager : MonoBehaviour
 	private void Update() {
 		UpdateChunks();
 
-		if (buildQueue.Count > 0) {
-			var chunk = buildQueue.Dequeue();
-			chunk.Create();
-		}
-		if (buildQueue.Count > 0) {
-			var chunk = buildQueue.Dequeue();
-			chunk.Create();
+		for (int i = 0; i < 2; i++) {
+			if (buildQueue.Count > 0) {
+				var chunk = buildQueue.Dequeue();
+				if (chunk) {
+					chunk.Create();
+				}
+			}
 		}
 	}
 
 	private void UpdateChunks() {
+
 		Vector3 playerPosition = player.transform.position;
 
 		currentPlayerChunk = ChunkFromWorldPosition(playerPosition.x, playerPosition.z);
 
 		if (currentPlayerChunk != previousPlayerChunk) {
-
+			List<Chunk> destroy = ListPool<Chunk>.Get();
 			foreach (var keypair in chunksDict) {
 				if (!InRenderDistance(keypair.Value.Position, currentPlayerChunk, renderDistance)) {
 					keypair.Value.Visible = false;
+					destroy.Add(keypair.Value);
 				}
 			}
+			for (int i = 0; i < destroy.Count; i++) {
+				chunksDict.Remove(destroy[i].Position);
+				Destroy(destroy[i].gameObject);
+			}
+			ListPool<Chunk>.Add(destroy);
 
 			for (int x = -renderDistance; x <= renderDistance; x++) {
 				for (int z = -renderDistance; z <= renderDistance; z++) {
@@ -76,6 +83,7 @@ public class ChunkManager : MonoBehaviour
 
 					if (chunksDict.ContainsKey(chunkCoord)) {
 						chunksDict[chunkCoord].Visible = true;
+
 					}
 					else {
 						var chunk = CreateChunk(chunkCoord.x, chunkCoord.y);
@@ -130,6 +138,6 @@ public class ChunkManager : MonoBehaviour
 	}
 
 	bool InRenderDistance(Vector2Int a, Vector2Int b, int chunkRenderingDistance) {
-		return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) <= chunkRenderingDistance;
+		return Mathf.Abs(a.x - b.x) <= chunkRenderingDistance && Mathf.Abs(a.y - b.y) <= chunkRenderingDistance;
 	}
 }
