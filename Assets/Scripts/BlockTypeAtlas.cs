@@ -5,14 +5,14 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Block Type Atlas", menuName = "Custom/Create Block Type Atlas")]
 public class BlockTypeAtlas : ScriptableObject
 {
-    public BlockType[] BlockUvs;
+    public BlockType[] BlockTypes;
 
     public BlockTypeUvs[] BlockTypeUvs {
 		get {
-            BlockTypeUvs[] uvs = new BlockTypeUvs[BlockUvs.Length];
+            BlockTypeUvs[] uvs = new BlockTypeUvs[BlockTypes.Length];
 
-			for (int i = 0; i < BlockUvs.Length; i++) {
-                uvs[i] = BlockUvs[i].BlockTypeUvs;
+			for (int i = 0; i < BlockTypes.Length; i++) {
+                uvs[i] = BlockTypes[i].BlockTypeUvs;
 			}
 
             return uvs;
@@ -24,6 +24,7 @@ public class BlockTypeAtlas : ScriptableObject
 public struct BlockType {
     public string Name;
     public BlockTypeUvs BlockTypeUvs;
+    public Sprite inventorySprite;
 }
 
 [System.Serializable]

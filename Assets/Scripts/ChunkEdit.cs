@@ -8,6 +8,7 @@ public class ChunkEdit : MonoBehaviour
 	public Camera cam;
     public ChunkManager chunkManager;
     public BlockHighlight blockHighlight;
+    public Inventory inventory;
 
     [Header("--- Animations ---")]
     public Animator handHandimator;
@@ -102,7 +103,8 @@ public class ChunkEdit : MonoBehaviour
 
             Vector3Int localPosition = ChunkManager.LocalPositionFromWorldPosition(offsetChunk, offsetPosition);
 
-            EditChunk(offsetChunk, localPosition, 0);
+            int replacedType = EditChunk(offsetChunk, localPosition, 0);
+            inventory.Add(replacedType);
         }
     }
 
@@ -122,13 +124,20 @@ public class ChunkEdit : MonoBehaviour
                 return;
             }
 
-            EditChunk(offsetChunk, localPosition, 5);
+            int selectedBlock = inventory.RemoveSelectedBlock();
+
+            if (selectedBlock == 0) {
+                return;
+			}
+
+            EditChunk(offsetChunk, localPosition, selectedBlock);
         }
     }
 
-    void EditChunk(Chunk chunk, Vector3Int localPosition, int newBlockType = 0) {
-        if (chunk.Blocks[IndexFromCoord(localPosition.x, localPosition.y, localPosition.z)] == newBlockType) {
-            return;
+    int EditChunk(Chunk chunk, Vector3Int localPosition, int newBlockType = 0) {
+        int blockTypeToReplace = chunk.Blocks[IndexFromCoord(localPosition.x, localPosition.y, localPosition.z)] ;
+        if (blockTypeToReplace == newBlockType) {
+            return 0;
 		}
         chunk.Blocks[IndexFromCoord(localPosition.x, localPosition.y, localPosition.z)] = newBlockType;
         chunk.Refresh();
@@ -176,6 +185,7 @@ public class ChunkEdit : MonoBehaviour
                 neighbour.Refresh();
             }
         }
+        return blockTypeToReplace;
     }
 
     int IndexFromCoord(int x, int y, int z) {
