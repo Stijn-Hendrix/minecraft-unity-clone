@@ -33,9 +33,12 @@ public class Chunk : MonoBehaviour
     ChunkMesh chunkMesh;
     ChunkNoise chunkNoise;
 
+    System.Diagnostics.Stopwatch stopwatch;
+
+    public bool HasBeenEdited { get; set; } = false;
+
     public int[] Blocks => chunkNoise.Noise;
 
-    System.Diagnostics.Stopwatch stopwatch;
 
     [ContextMenu("Create")]
     public void Create() {

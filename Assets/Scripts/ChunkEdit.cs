@@ -141,6 +141,7 @@ public class ChunkEdit : MonoBehaviour
 		}
         chunk.Blocks[IndexFromCoord(localPosition.x, localPosition.y, localPosition.z)] = newBlockType;
         chunk.Refresh();
+        chunk.HasBeenEdited = true;
 
         Vector2Int chunkPosition = chunk.Position;
 
@@ -151,6 +152,7 @@ public class ChunkEdit : MonoBehaviour
                 // Update the edge at x = chunkWidth + 1
                 neighbour.Blocks[IndexFromCoord(ChunkMetrics.chunkWidth + 1, localPosition.y, localPosition.z)] = newBlockType;
                 neighbour.Refresh();
+                neighbour.HasBeenEdited = true;
             }
         }
 
@@ -162,6 +164,7 @@ public class ChunkEdit : MonoBehaviour
                 // Update the edge at z = chunkWidth + 1
                 neighbour.Blocks[IndexFromCoord(localPosition.x, localPosition.y, ChunkMetrics.chunkWidth + 1)] = newBlockType;
                 neighbour.Refresh();
+                neighbour.HasBeenEdited = true;
             }
         }
 
@@ -172,6 +175,7 @@ public class ChunkEdit : MonoBehaviour
                 // Update the edge at x = 0
                 neighbour.Blocks[IndexFromCoord(0, localPosition.y, localPosition.z)] = newBlockType;
                 neighbour.Refresh();
+                neighbour.HasBeenEdited = true;
             }
 
         }
@@ -183,6 +187,7 @@ public class ChunkEdit : MonoBehaviour
                 // Update the edge at z = 0
                 neighbour.Blocks[IndexFromCoord(localPosition.x, localPosition.y, 0)] = newBlockType;
                 neighbour.Refresh();
+                neighbour.HasBeenEdited = true;
             }
         }
         return blockTypeToReplace;

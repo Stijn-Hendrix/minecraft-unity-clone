@@ -13,7 +13,10 @@ public class ChunkManager : MonoBehaviour
 
 	Dictionary<Vector2Int, Chunk> chunksDict = new Dictionary<Vector2Int, Chunk>();
 
-	Queue<Chunk> buildQueue = new Queue<Chunk>();
+	//Queue<Chunk> buildQueue = new Queue<Chunk>();
+	ChunkPriorityQueue buildQueue = new ChunkPriorityQueue();
+
+	Queue<Chunk> chunkPool = new Queue<Chunk>();
 
 	Vector2Int currentPlayerChunk = Vector2Int.one;
 	Vector2Int previousPlayerChunk = Vector2Int.zero;
@@ -33,9 +36,10 @@ public class ChunkManager : MonoBehaviour
 			var chunk = buildQueue.Dequeue();
 			if (InRenderDistance(currentPlayerChunk, chunk.Position, Mathf.Max(renderDistance / 2, 2))) {
 				chunk.Create();
+				chunk.Visible = true;
 			}
 			else {
-				buildQueue.Enqueue(chunk);
+				buildQueue.Enqueue(chunk, ManhattanDistance(chunk.Position, currentPlayerChunk));
 			}
 		}
 
@@ -52,6 +56,7 @@ public class ChunkManager : MonoBehaviour
 				var chunk = buildQueue.Dequeue();
 				if (chunk) {
 					chunk.Create();
+					chunk.Visible = true;
 				}
 			}
 		}
@@ -64,31 +69,36 @@ public class ChunkManager : MonoBehaviour
 		currentPlayerChunk = ChunkFromWorldPosition(playerPosition.x, playerPosition.z);
 
 		if (currentPlayerChunk != previousPlayerChunk) {
-			List<Chunk> destroy = ListPool<Chunk>.Get();
-			foreach (var keypair in chunksDict) {
-				if (!InRenderDistance(keypair.Value.Position, currentPlayerChunk, renderDistance)) {
-					keypair.Value.Visible = false;
-					destroy.Add(keypair.Value);
-				}
-			}
-			for (int i = 0; i < destroy.Count; i++) {
-				chunksDict.Remove(destroy[i].Position);
-				Destroy(destroy[i].gameObject);
-			}
-			ListPool<Chunk>.Add(destroy);
 
+			// Remove chunks out of render distance
+			List<Chunk> chunkRemove = ListPool<Chunk>.Get();
+			foreach (var keypair in chunksDict) {
+				Chunk chunk = keypair.Value;
+				if (!InRenderDistance(chunk.Position, currentPlayerChunk, renderDistance)) {
+					if (!chunk.HasBeenEdited) {
+						chunkRemove.Add(chunk);
+						chunkPool.Enqueue(chunk);
+					}
+					chunk.Visible = false;
+				}	
+			}
+			for (int i = 0; i < chunkRemove.Count; i++) {
+				chunksDict.Remove(chunkRemove[i].Position);
+			}
+			ListPool<Chunk>.Add(chunkRemove);
+
+			// Create chunks in render distance
 			for (int x = -renderDistance; x <= renderDistance; x++) {
 				for (int z = -renderDistance; z <= renderDistance; z++) {
 					Vector2Int chunkCoord = new Vector2Int(currentPlayerChunk.x + x, currentPlayerChunk.y + z);
 
 					if (chunksDict.ContainsKey(chunkCoord)) {
 						chunksDict[chunkCoord].Visible = true;
-
 					}
 					else {
 						var chunk = CreateChunk(chunkCoord.x, chunkCoord.y);
 						chunksDict.Add(chunkCoord, chunk);
-						chunk.Visible = true;
+						chunk.Visible = false;
 					}
 				}
 			}
@@ -107,7 +117,8 @@ public class ChunkManager : MonoBehaviour
 
 	Chunk CreateChunk(int x, int z) {
 
-		Chunk chunk = Instantiate(chunkPrefab, transform);
+
+		Chunk chunk = chunkPool.Count > 0 ? chunkPool.Dequeue() : Instantiate(chunkPrefab, transform);
 
 		chunk.transform.localPosition = new Vector3(x * ChunkMetrics.chunkWidth, 0, z * ChunkMetrics.chunkWidth);
 		chunk.Position = new Vector2Int(x, z);
@@ -116,7 +127,7 @@ public class ChunkManager : MonoBehaviour
 
 		// Queue the build process to avoid stuttering caused by creating to many chunks at the exact
 		// same time
-		buildQueue.Enqueue(chunk);
+		buildQueue.Enqueue(chunk, ManhattanDistance(chunk.Position, currentPlayerChunk));
 
 		return chunk;
 	}
@@ -140,4 +151,11 @@ public class ChunkManager : MonoBehaviour
 	bool InRenderDistance(Vector2Int a, Vector2Int b, int chunkRenderingDistance) {
 		return Mathf.Abs(a.x - b.x) <= chunkRenderingDistance && Mathf.Abs(a.y - b.y) <= chunkRenderingDistance;
 	}
+
+	public static int ManhattanDistance(Vector2Int a, Vector2Int b) {
+		checked {
+			return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+		}
+	}
+
 }
