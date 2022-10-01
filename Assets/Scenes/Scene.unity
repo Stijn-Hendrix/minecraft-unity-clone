@@ -2080,7 +2080,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chunkPrefab: {fileID: 1126414117410449546, guid: d2cbcc4daac5a0a4d8de20f40343af8a,
     type: 3}
-  renderDistance: 4
+  renderDistance: 20
   player: {fileID: 1511488075}
 --- !u!4 &1301897452
 Transform:
